@@ -1,8 +1,77 @@
+var mysql = require("mysql");       // This will require a user to install the npm package mysql (npm install mysql).
+var inquirer = require("inquirer"); // This will require a user to install the npm package inquirer (npm install inquirer)
 
 
 
+// Create connection information for the SQL Database:
+var connection = mysql.createConnection({
+    host: "localhost",
+    post: 8889              // Maki's port # is 8889. Change this if it is not 8889.
+    user: "root"            // Username is "root".
+    password: "root"        // Password is "root".
+    database: "jetmartDB"   // Connect to the database jetmartDB.
+});
+
+// Connect to the MySQL server and SQL Database:
+connection.connect(function(err) {
+    if (err) throw err;     // If there is an error, throw an error.
+    start();                // Run the start function after the connection is made
+});
 
 
+
+// Function which prompts the user for what action they should take:
+function start() {
+    inquirer
+        .prompt({
+            name: "purchaseOrExit",
+            type: "list",
+            message: "Would you like to [PURCHASE] an item or [EXIT] the store?"
+            choices: ["PURCHASE", "EXIT"]
+        })
+        .then(function(answer) {
+            // Based on the user's answer, either call the purchaseItem function or close the connection:
+            if (answer.purchaseOrExit === "PURCHASE") {
+                purchaseItem();
+            }
+            else {
+                connection.end();
+            }
+        })
+}
+
+
+
+// FUNCTION purchaseItem
+function purchaseItem() {
+    connection.query("SELECT * FROM products", function(err, results) {     // * means ALL. In this case it means SELECT all FROM the products table
+        if (err) throw err;     // If there is an error, throw an error.
+
+        // Once the items have been retrieved from the products table,
+        // prompt the user for which they'd like to purchase:
+        inquirer
+            .prompt([
+                {
+                    name: "choice",
+                    type: "rawlist",
+                    choices: function() {
+                        var choiceArray = []
+                        for (var i = 0; i < results.length ; i++) {
+                            choiceArray.push(results[i].item_name);
+                        }
+                        return choiceArray;     // return means "to display" (in this case display to the command line).
+                                                // So here it means to display the choiceArray to the command line. 
+                    }
+                    message: "What would you like to purchase?"
+                },                              // a comma , is needed here after the } because we are going on to the next question (prompt)
+                {
+                    // resume coding here
+                }
+            ])
+
+    })
+
+}
 
 
 
@@ -163,8 +232,8 @@ npm install inquirer        // etc.
 
 
 
-To run node for jetmart.js, type into the command line:
-// node jetmart
+To run node for jetmartCustomer.js, type into the command line:
+// node jetmartCustomer             // No need to type in .js, although node jetmartCustomer.js will work too.
 
 
 
