@@ -5,16 +5,17 @@ var inquirer = require("inquirer"); // This will require a user to install the n
 
 // Create connection information for the SQL Database:
 var connection = mysql.createConnection({
-    host: "localhost",
-    post: 8889              // Maki's port # is 8889. Change this if it is not 8889.
-    user: "root"            // Username is "root".
-    password: "root"        // Password is "root".
-    database: "jetmartDB"   // Connect to the database jetmartDB.
+    host: "localhost",                                                                  // Comma , is needed at end here.
+    port: 8889,              // Maki's port # is 8889. Change this if it is not 8889.   // Comma , is needed at end here.
+    user: "root",            // Username is "root".                                     // Comma , is needed at end here.
+    password: "root",        // Password is "root".                                     // Comma , is needed at end here.
+    database: "jetmartDB"    // Connect to the database jetmartDB.                      // This is the end of var connection so no comma , needed here.
 });
 
 // Connect to the MySQL server and SQL Database:
-connection.connect(function(err) {
+connection.connect(function(err) {      // Connection to the MySQL server and SQL database
     if (err) throw err;     // If there is an error, throw an error.
+    console.log("Connected as threadId: " + connection.threadId);       // console log connection threadId 
     start();                // Run the start function after the connection is made
 });
 
@@ -24,11 +25,12 @@ connection.connect(function(err) {
 function start() {
     inquirer
         .prompt({
-            name: "purchaseOrExit",
-            type: "list",
-            message: "Would you like to [PURCHASE] an item or [EXIT] the store?"
-            choices: ["PURCHASE", "EXIT"]
+            name: "purchaseOrExit",                                                 // Comma , is needed at end here.
+            type: "list",               // "input" is a built in type of inquirer   // Comma , is needed at end here.
+            message: "Would you like to [PURCHASE] an item or [EXIT] the store?",   // Comma , is needed at end here.
+            choices: ["PURCHASE", "EXIT"]                                           // This is the end of this prompt so no comma , needed here.
         })
+
         .then(function(answer) {
             // Based on the user's answer, either call the purchaseItem function or close the connection:
             if (answer.purchaseOrExit === "PURCHASE") {
@@ -44,31 +46,70 @@ function start() {
 
 // FUNCTION purchaseItem
 function purchaseItem() {
-    connection.query("SELECT * FROM products", function(err, results) {     // * means ALL. In this case it means SELECT all FROM the products table
+    connection.query("SELECT * FROM products", function(err, results) {     // Send a query through the connection made to the MySQL server and SQL database.
+                                                                            // * means ALL. In this case it means SELECT all FROM the products table
         if (err) throw err;     // If there is an error, throw an error.
+
+        /*
+        for (var i = 0; i < results.length; i++) {
+            console.log(results[i].product_name);       // console log all the product names
+        }
+        */
 
         // Once the items have been retrieved from the products table,
         // prompt the user for which they'd like to purchase:
+         
         inquirer
             .prompt([
                 {
-                    name: "choice",
-                    type: "rawlist",
+                    name: "choice",                                                         // Comma , is needed at end here.
+                    type: "rawlist",        // "rawlist" is a built in type of inquirer     // Comma , is needed at end here.
                     choices: function() {
-                        var choiceArray = []
-                        for (var i = 0; i < results.length ; i++) {
-                            choiceArray.push(results[i].item_name);
+                        var choiceArray = []                            // An empty choiceArray
+                        for (var i = 0; i < results.length; i++) {
+                            choiceArray.push(results[i].product_name);  // push to choiceArray all the product_name within the results object.
                         }
                         return choiceArray;     // return means "to display" (in this case display to the command line).
                                                 // So here it means to display the choiceArray to the command line. 
-                    }
-                    message: "What would you like to purchase?"
-                },                              // a comma , is needed here after the } because we are going on to the next question (prompt)
+                    },                                                                      // Comma , is needed at end here.
+                    message: "What would you like to purchase?"                             // This is the end of this prompt so no comma , needed here.
+                },                                                                          // Comma , is needed here after the } because we are going on to the next prompt (i.e. the next question).
+                
                 {
-                    // resume coding here
+                    name: "purchaseQuantity",                                               // Comma , is needed at end here.
+                    type: "input",              // "input" is a built in type of inquirer   // Comma , is needed at end here.
+                    message: "How many would you like to purchase?"                         // This is the end of this prompt so no comma , needed here.
                 }
             ])
 
+            .then(function(answer) {
+                var chosenItem;
+                for (var i = 0; i < results.length; i++) {                  // For the entire length of the results:
+                    if (results[i].product_name === answer.choice) {        // if the product_name from the results is equal to the answer of prompt "choice", then...
+                        chosenItem = results[i];                            // that particular index-result is the chosenItem.
+                    }
+                }
+
+                if ((chosenItem.stock_quantity - answer.purchaseQuantity) > 0) {    // If ((the stock_quantity of the chosenItem) minus (the answer of prompt "purchaseQuantity")  is greater than zero) then...
+                    connection.query(                                               // Send a query through the connection made to the MySQL server and SQL database.
+                        "UPDATE products SET ? WHERE ?",                                                // UPDATE the products table, 
+                        [
+                            {
+                                stock_quantity: (chosenItem.stock_quantity - answer.purchaseQuantity)   // SET to the column stock_quantity. Subtract the answer of the purchaseQuantity prompt from the stock_quantity of the chosen item.
+                            },
+                            {
+                                item_id: chosenItem.item_id                                             // the item_id is WHERE this update will be assigned. The assigned position is the the item_id of the chosen_Item. 
+                            }
+                        ],
+                        function(err) {
+                            if (err) throw err;                             // If there is an error, throw an error.
+                            console.log("Purchase made successfully!");     // console log "Purchase made successfully!"
+                            start();                                        // Go back to the function start()
+                        }
+                    );
+                }
+            })
+    
     })
 
 }
