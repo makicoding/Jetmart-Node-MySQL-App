@@ -64,6 +64,7 @@ function purchaseItem() {
                 {
                     name: "choice",                                                         // Comma , is needed at end here.
                     type: "rawlist",        // "rawlist" is a built in type of inquirer     // Comma , is needed at end here.
+                    message: "What would you like to purchase?",                            // Comma , is needed at end here. 
                     choices: function() {
                         var choiceArray = []                            // An empty choiceArray
                         for (var i = 0; i < results.length; i++) {
@@ -71,8 +72,7 @@ function purchaseItem() {
                         }
                         return choiceArray;     // return means "to display" (in this case display to the command line).
                                                 // So here it means to display the choiceArray to the command line. 
-                    },                                                                      // Comma , is needed at end here.
-                    message: "What would you like to purchase?"                             // This is the end of this prompt so no comma , needed here.
+                    }                                                                       // This is the end of this prompt so no comma , needed here.
                 },                                                                          // Comma , is needed here after the } because we are going on to the next prompt (i.e. the next question).
                 
                 {
@@ -91,6 +91,47 @@ function purchaseItem() {
                 }
 
                 if ((chosenItem.stock_quantity - answer.purchaseQuantity) > 0) {    // If ((the stock_quantity of the chosenItem) minus (the answer of prompt "purchaseQuantity")  is greater than zero) then...
+                    
+                    // ==============================
+                    // NEW CODE I AM WORKING ON BELOW HERE
+                    var totalCost = (answer.purchaseQuantity) * (answer.// CODE HERE)
+                    console.log(`The total cost is: ${totalcost}`)          // `string ${} string` format of writing code is a "template literal"
+
+                    inquirer
+                        .prompt({
+                            name: "confirmPurchase",                                    // Comma , is needed at end here.
+                            type: "confirm",                                            // Comma , is needed at end here.
+                            message: "Are you sure you would like to make the purchase?"
+
+                        })
+
+
+
+                        // ===== this part is for reference - can delete after copying
+                            inquirer
+                                .prompt({
+                                    name: "purchaseOrExit",                                                 // Comma , is needed at end here.
+                                    type: "list",               // "input" is a built in type of inquirer   // Comma , is needed at end here.
+                                    message: "Would you like to [PURCHASE] an item or [EXIT] the store?",   // Comma , is needed at end here.
+                                    choices: ["PURCHASE", "EXIT"]                                           // This is the end of this prompt so no comma , needed here.
+                                })
+                        
+                                .then(function(answer) {
+                                    // Based on the user's answer, either call the purchaseItem function or close the connection:
+                                    if (answer.purchaseOrExit === "PURCHASE") {
+                                        purchaseItem();
+                                    }
+                                    else {
+                                        connection.end();
+                                    }
+                                })
+                        // ==== the above part if for reference - can delete after copying
+
+
+
+                    // NEW CODE I AM WORKING ON ABOVE HERE
+                    // ==============================
+                    
                     connection.query(                                               // Send a query through the connection made to the MySQL server and SQL database.
                         "UPDATE products SET ? WHERE ?",                                                // UPDATE the products table, 
                         [
@@ -108,13 +149,16 @@ function purchaseItem() {
                         }
                     );
                 }
+
+                else {
+                    console.log("Insufficient quantity available in stock. Please try again.");
+                    start();        // Go back to the function start() so that the user has the choice to either make a new purchase or exit the store.
+                }
             })
     
     })
 
 }
-
-
 
 
 
@@ -239,6 +283,39 @@ anyone else to run your code after cloning your project.
 you can just type:
 // npm init
 and the command line will ask you about the settings for each.
+
+
+
+--------------------
+inquirer
+
+name:       this is a string "" and is the name assigned to this particular prompt for referencing in the code later if needed (you can call the name string anything you want).
+type:       this is used to set the type of input that the prompt receives from the user
+                type includes:
+                    "list"      // 
+                    "rawlist"   // this is a numbered list i.e. 1) item1 2) item2 etc.
+                    "checkbox"
+                    "input"     // this accepts a typed string input from the user.
+                    "confirm"
+                    "password"
+                other type are:
+                    "expand"
+                    "editor"
+message:    this is the question to print to the command line.
+choices:    this is a choices array or a function returning a choices array.
+
+npm inquirer documentation: https://www.npmjs.com/package/inquirer
+
+
+
+--------------------
+TEMPLATE LITERALS
+
+`string ${} string` format of writing code is a template literal.
+
+Example:
+    var totalQuantity = 3;
+    console.log(`The total quantity is: ${totalQuantity}`);
 
 
 
