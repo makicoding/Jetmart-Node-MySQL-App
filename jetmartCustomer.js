@@ -21,7 +21,7 @@ connection.connect(function(err) {      // Connection to the MySQL server and SQ
 
 
 
-// Function which prompts the user for what action they should take:
+// FUNCTION start
 function start() {
     inquirer
         .prompt({
@@ -49,15 +49,18 @@ function purchaseItem() {
     connection.query("SELECT * FROM products", function(err, results) {     // Send a query through the connection made to the MySQL server and SQL database.
                                                                             // * means ALL. In this case it means SELECT all FROM the products table
         if (err) throw err;     // If there is an error, throw an error.
-
-        /*
+        
+        /* 
+        // ------------------------------
+        // Check results are being returned from the MySQL database:
         for (var i = 0; i < results.length; i++) {
             console.log(results[i].product_name);       // console log all the product names
         }
-        */
+        // ------------------------------ 
+        */ 
 
-        // Once the items have been retrieved from the products table,
-        // prompt the user for which they'd like to purchase:
+        // Once all the data has been retrieved from the products table,
+        // prompt the user for which they'd like to purchase from the product_name column:
          
         inquirer
             .prompt([
@@ -92,62 +95,50 @@ function purchaseItem() {
 
                 if ((chosenItem.stock_quantity - answer.purchaseQuantity) > 0) {    // If ((the stock_quantity of the chosenItem) minus (the answer of prompt "purchaseQuantity")  is greater than zero) then...
                     
-                    // ==============================
-                    // NEW CODE I AM WORKING ON BELOW HERE
-                    var totalCost = (answer.purchaseQuantity) * (answer.// CODE HERE)
-                    console.log(`The total cost is: ${totalcost}`)          // `string ${} string` format of writing code is a "template literal"
+                    console.log(`The cost of each unit is: ${chosenItem.price}`)
+                    console.log(`The total quanity ordered is: ${answer.purchaseQuantity}`)
 
+                    var totalCost = chosenItem.price * answer.purchaseQuantity
+                    console.log(`The total cost of the quantity ordered is: ${totalCost}`)          // `string ${} string` format of writing code is a "template literal"
+                    
                     inquirer
                         .prompt({
-                            name: "confirmPurchase",                                    // Comma , is needed at end here.
-                            type: "confirm",                                            // Comma , is needed at end here.
-                            message: "Are you sure you would like to make the purchase?"
-
+                            name: "confirmPurchase",                                        // Comma , is needed at end here.
+                            type: "confirm",                                                // Comma , is needed at end here.   // The answer choices available are either yes or no boolean values so either true or false. No choices line of code.
+                            message: "Are you sure you would like to make the purchase?"    // This is the end of this prompt so no comma , needed here.
                         })
 
-
-
-                        // ===== this part is for reference - can delete after copying
-                            inquirer
-                                .prompt({
-                                    name: "purchaseOrExit",                                                 // Comma , is needed at end here.
-                                    type: "list",               // "input" is a built in type of inquirer   // Comma , is needed at end here.
-                                    message: "Would you like to [PURCHASE] an item or [EXIT] the store?",   // Comma , is needed at end here.
-                                    choices: ["PURCHASE", "EXIT"]                                           // This is the end of this prompt so no comma , needed here.
-                                })
-                        
-                                .then(function(answer) {
-                                    // Based on the user's answer, either call the purchaseItem function or close the connection:
-                                    if (answer.purchaseOrExit === "PURCHASE") {
-                                        purchaseItem();
-                                    }
-                                    else {
-                                        connection.end();
-                                    }
-                                })
-                        // ==== the above part if for reference - can delete after copying
-
-
-
-                    // NEW CODE I AM WORKING ON ABOVE HERE
-                    // ==============================
-                    
-                    connection.query(                                               // Send a query through the connection made to the MySQL server and SQL database.
-                        "UPDATE products SET ? WHERE ?",                                                // UPDATE the products table, 
-                        [
-                            {
-                                stock_quantity: (chosenItem.stock_quantity - answer.purchaseQuantity)   // SET to the column stock_quantity. Subtract the answer of the purchaseQuantity prompt from the stock_quantity of the chosen item.
-                            },
-                            {
-                                item_id: chosenItem.item_id                                             // the item_id is WHERE this update will be assigned. The assigned position is the the item_id of the chosen_Item. 
+                        .then(function(answer) {
+                            if (answer.confirmPurchase === true) {      // type is a "confirm" for confirmPurchase, so the answer will be a boolean (either true or false)
+                                updateStockQuantity();                  // Go to the function updateStockQuantity()
                             }
-                        ],
-                        function(err) {
-                            if (err) throw err;                             // If there is an error, throw an error.
-                            console.log("Purchase made successfully!");     // console log "Purchase made successfully!"
-                            start();                                        // Go back to the function start()
-                        }
-                    );
+
+                            else {
+                                start();                                // Go back to the function start()
+                            }
+                        })
+
+                    // ------------------------------
+                    // FUNCTION updateStockQuantity
+                    function updateStockQuantity() {   
+                        connection.query(                                       // Send a query through the connection made to the MySQL server and SQL database.
+                            "UPDATE products SET ? WHERE ?",                                                // UPDATE the products table, 
+                            [
+                                {
+                                    stock_quantity: (chosenItem.stock_quantity - answer.purchaseQuantity)   // SET to the column stock_quantity. Subtract the answer of the purchaseQuantity prompt from the stock_quantity of the chosen item.
+                                },
+                                {
+                                    item_id: chosenItem.item_id                                             // the item_id is WHERE this update will be assigned. The assigned position is the the item_id of the chosen_Item. 
+                                }
+                            ],
+                            function(err) {
+                                if (err) throw err;                             // If there is an error, throw an error.
+                                console.log("Purchase made successfully!");     
+                                start();                                        // Go back to the function start()
+                            }
+                        );
+                    }
+                    // ------------------------------
                 }
 
                 else {
@@ -155,9 +146,7 @@ function purchaseItem() {
                     start();        // Go back to the function start() so that the user has the choice to either make a new purchase or exit the store.
                 }
             })
-    
     })
-
 }
 
 
@@ -314,8 +303,10 @@ TEMPLATE LITERALS
 `string ${} string` format of writing code is a template literal.
 
 Example:
-    var totalQuantity = 3;
+    var totalQuantity = 3 * 2;
     console.log(`The total quantity is: ${totalQuantity}`);
+        
+    // "The total quantity is: 6" would be printed to the console.
 
 
 
