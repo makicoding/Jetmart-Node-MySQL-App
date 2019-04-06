@@ -65,9 +65,9 @@ function purchaseItem() {
         inquirer
             .prompt([
                 {
-                    name: "choice",                                                         // Comma , is needed at end here.
-                    type: "rawlist",        // "rawlist" is a built in type of inquirer     // Comma , is needed at end here.
-                    message: "What would you like to purchase?",                            // Comma , is needed at end here. 
+                    name: "whatToPurchase",                                                         // Comma , is needed at end here.
+                    type: "rawlist",        // "rawlist" is a built in type of inquirer             // Comma , is needed at end here.
+                    message: "What would you like to purchase?",                                    // Comma , is needed at end here. 
                     choices: function() {
                         var choiceArray = []                            // An empty choiceArray
                         for (var i = 0; i < results.length; i++) {
@@ -75,8 +75,8 @@ function purchaseItem() {
                         }
                         return choiceArray;     // return means "to display" (in this case display to the command line).
                                                 // So here it means to display the choiceArray to the command line. 
-                    }                                                                       // This is the end of this prompt so no comma , needed here.
-                },                                                                          // Comma , is needed here after the } because we are going on to the next prompt (i.e. the next question).
+                    }                                                                               // This is the end of this prompt so no comma , needed here.
+                },                                                                                  // Comma , is needed here after the } because we are going on to the next prompt (i.e. the next question).
                 
                 {
                     name: "purchaseQuantity",                                               // Comma , is needed at end here.
@@ -87,19 +87,21 @@ function purchaseItem() {
 
             .then(function(answer) {
                 var chosenItem;
-                for (var i = 0; i < results.length; i++) {                  // For the entire length of the results:
-                    if (results[i].product_name === answer.choice) {        // if the product_name from the results is equal to the answer of prompt "choice", then...
-                        chosenItem = results[i];                            // that particular index-result is the chosenItem.
+                for (var i = 0; i < results.length; i++) {                          // For the entire length of the results:
+                    if (results[i].product_name === answer.whatToPurchase) {        // if the product_name from the results is equal to the answer of prompt "whatToPurchase", then...
+                        chosenItem = results[i];                                    // that particular index-result is the chosenItem.
                     }
                 }
 
                 if ((chosenItem.stock_quantity - answer.purchaseQuantity) > 0) {    // If ((the stock_quantity of the chosenItem) minus (the answer of prompt "purchaseQuantity")  is greater than zero) then...
                     
-                    console.log(`The cost of each unit is: ${chosenItem.price}`)
-                    console.log(`The total quanity ordered is: ${answer.purchaseQuantity}`)
+                    console.log(`The cost of each unit is: ${chosenItem.price}`)                    // `string ${} string` format of writing code is a "template literal"    
+                    console.log(`The total quanity ordered is: ${answer.purchaseQuantity}`)         // `string ${} string` format of writing code is a "template literal"
 
                     var totalCost = chosenItem.price * answer.purchaseQuantity
-                    console.log(`The total cost of the quantity ordered is: ${totalCost}`)          // `string ${} string` format of writing code is a "template literal"
+                    var totalCostTwoDecimalPlaces = totalCost.toFixed(2);           // Use toFixed(insertDecimalPlacesNumberHere) to show only a set number of decimal places
+
+                    console.log(`The total cost of the quantity ordered is: ${totalCostTwoDecimalPlaces}`)          // `string ${} string` format of writing code is a "template literal"
                     
                     inquirer
                         .prompt({
@@ -120,15 +122,17 @@ function purchaseItem() {
 
                     // ------------------------------
                     // FUNCTION updateStockQuantity
-                    function updateStockQuantity() {   
+                    function updateStockQuantity() {
+                           
                         connection.query(                                       // Send a query through the connection made to the MySQL server and SQL database.
-                            "UPDATE products SET ? WHERE ?",                                                // UPDATE the products table, 
+                            "UPDATE products SET ? WHERE ?",                                                            // UPDATE the products table 
                             [
                                 {
-                                    stock_quantity: (chosenItem.stock_quantity - answer.purchaseQuantity)   // SET to the column stock_quantity. Subtract the answer of the purchaseQuantity prompt from the stock_quantity of the chosen item.
+                                    stock_quantity: (chosenItem.stock_quantity - parseInt(answer.purchaseQuantity))     // SET to the column stock_quantity. Subtract the answer of the purchaseQuantity prompt from the stock_quantity of the chosen item.
+                                                                                                                        // Convert the user's answer for the prompt purchaseQuantity from a string to an integer using parseInt()
                                 },
                                 {
-                                    item_id: chosenItem.item_id                                             // the item_id is WHERE this update will be assigned. The assigned position is the the item_id of the chosen_Item. 
+                                    item_id: chosenItem.item_id                                                         // the item_id is WHERE this update will be assigned. The assigned position is the the item_id of the chosen_Item. 
                                 }
                             ],
                             function(err) {
@@ -307,6 +311,20 @@ Example:
     console.log(`The total quantity is: ${totalQuantity}`);
         
     // "The total quantity is: 6" would be printed to the console.
+
+
+
+--------------------
+toFixed()
+
+Use toFixed(insertDecimalPlacesNumberHere) to show only a set number of decimal places.
+
+Example:
+    var myNumber = 5.56789;
+    var myNumberTwoDecimalPlaces = myNumber.toFixed(2);     // Here the (2) indicated 2 decimal places.
+    console.log(myNumberTwoDecimalPlaces);
+
+    // "5.57" would be printed to the console.
 
 
 
