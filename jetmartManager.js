@@ -123,7 +123,7 @@ function addToInventory() {
                 var chosenItem;
                 for (var i = 0; i < results.length; i++) {                  // For the entire length of the results:
                     if (results[i].product_name === answer.choice) {        // if the product_name from the results is equal to the answer of prompt "choice", then...
-                        chosenItem = results[i];                            // that particular index-result is the chosenItem.
+                        chosenItem = results[i];                            // that particular index-result (result[i]) is the chosenItem.
                     }
                 }
 
@@ -225,11 +225,11 @@ function addNewProduct() {
                 
                     
                     console.log("You are about to add the following new product to the database:");         
-                    console.log(`Item Id: ${answer.newProductItemId}`);                               // `string ${} string` format of writing code is a "template literal"
-                    console.log(`Product Name: ${answer.newProductName}`);                                 // `string ${} string` format of writing code is a "template literal"
-                    console.log(`Department Name: ${answer.newProductDepartmentName}`);                       // `string ${} string` format of writing code is a "template literal"
+                    console.log(`Item Id: ${answer.newProductItemId}`);                             // `string ${} string` format of writing code is a "template literal"
+                    console.log(`Product Name: ${answer.newProductName}`);                          // `string ${} string` format of writing code is a "template literal"
+                    console.log(`Department Name: ${answer.newProductDepartmentName}`);             // `string ${} string` format of writing code is a "template literal"
                     console.log(`Price: ${answer.newProductPrice}`);                                // `string ${} string` format of writing code is a "template literal"
-                    console.log(`Stock Quantity: ${answer.newProductStockQuantity}`);                        // `string ${} string` format of writing code is a "template literal"
+                    console.log(`Stock Quantity: ${answer.newProductStockQuantity}`);               // `string ${} string` format of writing code is a "template literal"
 
                     inquirer
                         .prompt({
@@ -252,7 +252,7 @@ function addNewProduct() {
                     // FUNCTION updateDatabaseWithNewProduct
                     function updateDatabaseWithNewProduct() {   
                         connection.query(                                       // Send a query through the connection made to the MySQL server and SQL database.
-                            "INSERT INTO products SET ?",                                       // INSERT INTO the products table 
+                            "INSERT INTO products SET ?",                                       // INSERT INTO the products table. For INSERT INTO, we do not use WHERE ? 
                             [
                                 {
                                     item_id: answer.newProductItemId,                           // SET to the column item_id. Add the answer of the newProductItemId prompt to item_id.                                 // Comma , is needed at end here.                                 
@@ -457,6 +457,14 @@ Before running this JS file in node, install packages from npmjs.com type the fo
 into the command line (the name npm stands for Node Package Manager):
 // npm install mysql
 // npm install inquirer
+
+
+
+If a package.json file already exists with dependencies listed inside (if for example you have
+cloned this repo from gitHub), then you can just type either of the following without installing 
+each individual package manually:
+// npm i            // this is just a shorthand version of npm install
+// npm install
 
 
 

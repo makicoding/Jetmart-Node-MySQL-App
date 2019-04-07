@@ -338,6 +338,14 @@ into the command line (the name npm stands for Node Package Manager):
 
 
 
+If a package.json file already exists with dependencies listed inside (if for example you have
+cloned this repo from gitHub), then you can just type either of the following without installing 
+each individual package manually:
+// npm i            // this is just a shorthand version of npm install
+// npm install
+
+
+
 To check that everything installed properly, type the following into the command line:
 // cat package.json
 
