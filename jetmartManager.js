@@ -489,7 +489,7 @@ npm install inquirer        // etc.
 
 
 
-To run node for jetmartCustomer.js, type into the command line:
+To run node for jetmartManager.js, type into the command line:
 // node jetmartManager             // No need to type in .js, although node jetmartManager.js will work too.
 
 
