@@ -59,6 +59,8 @@ the app shows the inventory of Jetmart and allows items to be added to the datab
 
 * Add new product 
 
+* Delete product
+
 ![Jetmart_screenshot_03](https://raw.githubusercontent.com/makicoding/Jetmart-Node-MySQL-App/master/screenshots/Jetmart_screenshot_03.png)
 ***
 
