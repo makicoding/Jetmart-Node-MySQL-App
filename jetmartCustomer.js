@@ -161,7 +161,7 @@ function purchaseItem() {
 /*
 .gitignore file
 
-For when uploading folder to a gitHub repository.
+For when uploading folder to a GitHub repository.
 
 Create .gitignore file at start of project and include inside it the following lines of code:
 node_modules
@@ -169,8 +169,8 @@ node_modules
 
 It's good practice to always include node_modules in the .gitignore file because this folder can get huge.
 We have coded to "require" npm install of any packages necessary for this node app, so if someone clones this repo from
-gitHub, all they have to do is npm install any necessary packages for the app to work. Therefore the node_modules folder 
-doesn't need to be uploaded to gitHub.
+GitHub, all they have to do is npm install any necessary packages for the app to work. Therefore the node_modules folder 
+doesn't need to be uploaded to GitHub.
 
 
 
@@ -339,7 +339,7 @@ into the command line (the name npm stands for Node Package Manager):
 
 
 If a package.json file already exists with dependencies listed inside (if for example you have
-cloned this repo from gitHub), then you can just type either of the following without installing 
+cloned this repo from GitHub), then you can just type either of the following without installing 
 each individual package manually:
 // npm i            // this is just a shorthand version of npm install
 // npm install
