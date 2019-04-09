@@ -132,7 +132,7 @@ function purchaseItem() {
                                                                                                                         // Convert the user's answer for the prompt purchaseQuantity from a string to an integer using parseInt()
                                 },
                                 {
-                                    item_id: chosenItem.item_id                                                         // the item_id is WHERE this update will be assigned. The assigned position is the the item_id of the chosen_Item. 
+                                    item_id: chosenItem.item_id                                                         // the item_id is WHERE this update will be assigned. The assigned position is the the item_id of the chosenItem. 
                                 }
                             ],
                             function(err) {

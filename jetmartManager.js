@@ -25,10 +25,10 @@ connection.connect(function(err) {      // Connection to the MySQL server and SQ
 function start() {
     inquirer
         .prompt({
-            name: "menuOptions",                                                                                        // Comma , is needed at end here.
-            type: "rawlist",          // "rawlist" is a built in type of inquirer                                       // Comma , is needed at end here.
-            message: "Please choose from the following options:",                                                       // Comma , is needed at end here.
-            choices: ["View products for sale", "View low inventory", "Add to inventory", "Add new product", "Exit"]    // This is the end of this prompt so no comma , needed here.
+            name: "menuOptions",                                                                                                            // Comma , is needed at end here.
+            type: "rawlist",          // "rawlist" is a built in type of inquirer                                                           // Comma , is needed at end here.
+            message: "Please choose from the following options:",                                                                           // Comma , is needed at end here.
+            choices: ["View products for sale", "View low inventory", "Add to inventory", "Add new product", "Delete product", "Exit"]      // This is the end of this prompt so no comma , needed here.
         })
 
         .then(function(answer) {
@@ -44,6 +44,9 @@ function start() {
             }
             else if (answer.menuOptions === "Add new product") {
                 addNewProduct();
+            }
+            else if (answer.menuOptions === "Delete product") {
+                deleteProduct();
             }
             else {
                 connection.end();
@@ -159,7 +162,7 @@ function addToInventory() {
                                                                                                                     // Convert the user's answer for the prompt addQuantity from a string to an integer using parseInt() 
                                 },
                                 {
-                                    item_id: chosenItem.item_id                                                     // the item_id is WHERE this update will be assigned. The assigned position is the the item_id of the chosen_Item. 
+                                    item_id: chosenItem.item_id                                                     // the item_id is WHERE this update will be assigned. The assigned position is the the item_id of the chosenItem. 
                                 }
                             ],
                             function(err) {
@@ -271,6 +274,81 @@ function addNewProduct() {
                     }
                     // ------------------------------
                 
+            })
+    })
+}
+
+
+
+// FUNCTION deleteProduct
+function deleteProduct() {
+    connection.query("SELECT * FROM products", function(err, results) {     // Send a query through the connection made to the MySQL server and SQL database.
+                                                                            // * means ALL. In this case it means SELECT all FROM the products table
+        if (err) throw err;     // If there is an error, throw an error.
+        
+        // Once all the data has been retrieved from the products table,
+        // prompt the user for which they'd like to delete from the product_name column:
+         
+        inquirer
+            .prompt([
+                {
+                    name: "whatToDelete",                                                         // Comma , is needed at end here.
+                    type: "rawlist",        // "rawlist" is a built in type of inquirer           // Comma , is needed at end here.
+                    message: "What product would you like to delete?",                            // Comma , is needed at end here. 
+                    choices: function() {
+                        var choiceArrayTwo = []                            // An empty choiceArrayTwo
+                        for (var i = 0; i < results.length; i++) {
+                            choiceArrayTwo.push(results[i].product_name);  // push to choiceArrayTwo all the product_name within the results object.
+                        }
+                        return choiceArrayTwo;     // return means "to display" (in this case display to the command line).
+                                                    // So here it means to display the choiceArrayTwo to the command line. 
+                    }                                                                             // This is the end of this prompt so no comma , needed here.
+                }                                                                                 // This is the end of this prompt so no comma , needed here.
+            ])
+
+            .then(function(answer) {
+                var chosenItemToDelete;
+                for (var i = 0; i < results.length; i++) {                              // For the entire length of the results:
+                    if (results[i].product_name === answer.whatToDelete) {              // if the product_name from the results is equal to the answer of prompt "whatToDelete", then...
+                        chosenItemToDelete = results[i];                                // that particular index-result is the chosenItemToDelete.
+                    }
+                }
+                    
+                inquirer
+                    .prompt({
+                        name: "confirmDeletion",                                        // Comma , is needed at end here.
+                        type: "confirm",                                                // Comma , is needed at end here.   // The answer choices available are either yes or no boolean values so either true or false. No choices line of code.
+                        message: "Are you sure you would like to delete the product?"   // This is the end of this prompt so no comma , needed here.
+                    })
+
+                    .then(function(answer) {
+                        if (answer.confirmDeletion === true) {      // type is a "confirm" for confirmDeletion, so the answer will be a boolean (either true or false)
+                            updateproductsDatabase();               // Go to the function updateproductsDatabase()
+                        }
+
+                        else {
+                            start();                                // Go back to the function start()
+                        }
+                    })
+
+                // ------------------------------
+                // FUNCTION updateproductsDatabase
+                function updateproductsDatabase() {
+                        
+                    connection.query(                                       // Send a query through the connection made to the MySQL server and SQL database.
+                        "DELETE FROM products WHERE ?",                     // UPDATE the products table 
+                        [
+                            {
+                                item_id: chosenItemToDelete.item_id         // the item_id is WHERE this deletion will be assigned. The assigned position is the the item_id of the chosenItemToDelete. 
+                            }
+                        ],
+                        function(err) {
+                            if (err) throw err;                             // If there is an error, throw an error.
+                            console.log("Product deleted successfully!");     
+                            start();                                        // Go back to the function start()
+                        }
+                    );
+                }
             })
     })
 }
