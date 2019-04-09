@@ -9,7 +9,7 @@
 
 This is an inventory system for the store Jetmart. It is a Command Line Node app that communicates with a MySQL database. 
 <br></br>
-The jetmartCustomer.js app takes in a customer's order and updates the database. The jetmartManager.js app shows the inventory and allows items to be added to the database.
+The jetmartCustomer.js app takes in a customer's order and updates the database. The jetmartManager.js app shows the inventory and allows items to be added to or delete from the database.
 ***
 
 ### Terminal Commands
