@@ -1,16 +1,18 @@
 # Jetmart-Node-MySQL-App
 
-This is an inventory system for the store Jetmart. It is a Command Line Node app that communicates with a MySQL database. 
-<br></br>
-The jetmartCustomer.js app takes in a customer's order and updates the database. The jetmartManager.js app shows the inventory and allows items to be added to the database.
-***
-
 [Click here to view short demo video of app](https://drive.google.com/file/d/1sDDfytu3DzhJ28mqIO1QySa6r55XvKUL/view?usp=sharing)
 <br></br>
 [Click here to view full length demo video of app](https://drive.google.com/file/d/1oZIz1vHuH8QGqyc8nidygUZippOpFPKZ/view?usp=sharing)
 ***
 
-### Terminal Commands:
+### Overview
+
+This is an inventory system for the store Jetmart. It is a Command Line Node app that communicates with a MySQL database. 
+<br></br>
+The jetmartCustomer.js app takes in a customer's order and updates the database. The jetmartManager.js app shows the inventory and allows items to be added to the database.
+***
+
+### Terminal Commands
 
 node jetmartCustomer
 <br>
