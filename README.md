@@ -5,6 +5,9 @@
 [Click here to view full length demo video of app](https://drive.google.com/file/d/1oZIz1vHuH8QGqyc8nidygUZippOpFPKZ/view?usp=sharing)
 ***
 
+Technologies used: Node JS, MySQL, JavaScript. 
+
+***
 ### Overview
 
 This is an inventory system for the store Jetmart. It is a Command Line Node app that communicates with a MySQL database. 
